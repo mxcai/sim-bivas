@@ -4,10 +4,8 @@
 library(reshape2)
 library(ggplot2)
 library(pROC)
-# library(grpreg)
 library(mvtnorm)
 library(bivas)
-# library(IGESS)
 library(glmnet)
 library(varbvs)
 set.seed(10)
@@ -36,14 +34,7 @@ snr <- c(0.5,1,2,5,10)
 pi_true <- c(0.05,0.1,0.2,0.4,0.8)
 alpha_true <- c(0.8,0.4,0.2,0.1,0.05)
 
-#total sparsity 0.004
-# pi_true <- c(0.005,0.01,0.02,0.04,0.1,0.2,0.4,0.8)
-# alpha_true <- c(0.8,0.4,0.2,0.1,0.04,0.02,0.01,0.005)
-
 sparsity <- data.frame(pi=pi_true,alpha=alpha_true)
-
-# out.bivas <- data.frame(total_Error=numeric(0),task1_Error=numeric(0),task2_Error=numeric(0),task3_Error=numeric(0),snr=character(0),sparsity=character(0))
-# out.VB <- out.ridge <- out.lasso <- out.bivas
 
 out.bivas <- matrix(,0,l+1+3)
 out.VB <- out.ridge <- out.lasso <- out.bivas
@@ -112,7 +103,6 @@ for(r in 1:length(snr)){
 }
 
 
-# out <- data.frame(total_err=numeric(0),t1_err=numeric(0),t2_err=numeric(0),t3_err=numeric(0),pi=numeric(0),alpha=numeric(0),method=character(0))
 out <- rbind(data.frame(out.bivas,method="BIVAS"),data.frame(out.VB,method="varbvs"),data.frame(out.ridge,method="Ridge"),data.frame(out.lasso,method="Lasso"))
 names(out) <- c("Overall","Task1","Task2","Task3","pi","alpha","SNR","method")
 out$Sparsity <- paste(out$pi,out$alpha,sep = ":")
