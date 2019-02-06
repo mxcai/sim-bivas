@@ -10,31 +10,70 @@ names(x_grid) <- levels(out$SNR)
 y_grid <- c("CORR=-0.5","CORR=0","CORR=0.5")
 names(y_grid) <- levels(droplevels(out$CORR))
 
-pdf(file = "BF_AUC.pdf",width = 12,height = 9)
+
 P_BF_AUC   <- ggplot(out,aes(x=Sparsity,y=AUC,fill=Method)) + geom_boxplot() +
   facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  scale_fill_manual(values=c("#CC6666", "#66CC99", "#E69F00", "#56B4E9")) +
   theme_grey(base_size = 15) + theme(legend.position="bottom")
+pdf(file = "Supp_BF_AUC.pdf",width = 12,height = 9)
 P_BF_AUC
 dev.off()
 
-pdf(file = "BF_gAUC.pdf",width = 12,height = 9)
+P_BF_AUC   <- ggplot(subset(out,CORR==0),aes(x=Method,y=AUC,fill=Method)) + geom_boxplot() +
+  facet_grid(SNR~Sparsity,labeller = labeller(SNR=x_grid))+
+  scale_fill_manual(values=c("#CC6666", "#66CC99", "#E69F00", "#56B4E9")) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom", axis.text.x = element_text(angle = 45, hjust = 1))
+pdf(file = "BF_AUC.pdf",width = 12,height = 9)
+P_BF_AUC
+dev.off()
+
+
 P_BF_gAUC <- ggplot(out[out$Method!="varbvs",],aes(x=Sparsity,y=groupAUC,fill=Method)) + geom_boxplot() +
   facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) + ylab("group-AUC") +
-  theme_grey(base_size = 15) + theme(legend.position="bottom") + scale_fill_discrete(drop=FALSE)
+  scale_fill_manual(values=c("#CC6666", "#E69F00", "#56B4E9"),drop=TRUE) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom")
+pdf(file = "Supp_BF_gAUC.pdf",width = 12,height = 9)
 P_BF_gAUC
 dev.off()
 
-pdf(file = "BF_error.pdf",width = 12,height = 9)
+P_BF_gAUC <- ggplot(subset(out,CORR==0 & Method!="varbvs"),aes(x=Method,y=groupAUC,fill=Method)) + geom_boxplot() +
+  facet_grid(SNR~Sparsity,labeller = labeller(SNR=x_grid)) + ylab("group-AUC") +
+  scale_fill_manual(values=c("#CC6666", "#E69F00", "#56B4E9"),drop=TRUE) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom", axis.text.x = element_text(angle = 45, hjust = 1))
+pdf(file = "BF_gAUC.pdf",width = 12,height = 9)
+P_BF_gAUC
+dev.off()
+
+
 P_BF_error <- ggplot(out,aes(x=Sparsity,y=Error,fill=Method)) + geom_boxplot() +
   facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) + ylim(c(0,0.02)) +
+  scale_fill_manual(values=c("#CC6666", "#66CC99", "#E69F00", "#56B4E9")) +
   ylab("Mean Squared Error") + theme_grey(base_size = 15) + theme(legend.position="bottom")
+pdf(file = "Supp_BF_error.pdf",width = 12,height = 9)
 P_BF_error
 dev.off()
 
-pdf(file = "BF_time.pdf",width = 12,height = 9)
+P_BF_error <- ggplot(subset(out,CORR==0),aes(x=Method,y=Error,fill=Method)) + geom_boxplot() +
+  facet_grid(SNR~Sparsity,labeller = labeller(SNR=x_grid)) + ylim(c(0,0.015)) +
+  scale_fill_manual(values=c("#CC6666", "#66CC99", "#E69F00", "#56B4E9")) +
+  ylab("Mean Squared Error") + theme_grey(base_size = 15) + theme(legend.position="bottom", axis.text.x = element_text(angle = 45, hjust = 1))
+pdf(file = "BF_error.pdf",width = 12,height = 9)
+P_BF_error
+dev.off()
+
+
 P_BF_time <- ggplot(out,aes(x=Sparsity,y=Time,fill=Method)) + geom_boxplot() +
   facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) + ylim(c(0,75)) +
+  scale_fill_manual(values=c("#CC6666", "#66CC99", "#E69F00", "#56B4E9")) +
   ylab("Time(second)") + theme_grey(base_size = 15) + theme(legend.position="bottom")
+pdf(file = "Supp_BF_time.pdf",width = 12,height = 9)
+P_BF_time
+dev.off()
+P_BF_time <- ggplot(subset(out,CORR==0),aes(x=Method,y=Time,fill=Method)) + geom_boxplot() +
+  facet_grid(SNR~Sparsity,labeller = labeller(SNR=x_grid)) + ylim(c(0,75)) +
+  scale_fill_manual(values=c("#CC6666", "#66CC99", "#E69F00", "#56B4E9")) +
+  ylab("Time(second)") + theme_grey(base_size = 15) + theme(legend.position="bottom", axis.text.x = element_text(angle = 45, hjust = 1))
+pdf(file = "BF_time.pdf",width = 12,height = 9)
 P_BF_time
 dev.off()
 
@@ -52,7 +91,6 @@ P_B1_power <- ggplot(out[out$Method%in%c("BIVAS","varbvs"),],aes(x=Sparsity,y=Po
   theme_grey(base_size = 15) + theme(legend.position="bottom")
 P_B1_power
 dev.off()
-
 
 
 #group BIVAS vs BSGS-SS
@@ -212,13 +250,608 @@ dev.off()
 #Lq trace NFBC-HDL
 pdf(file = "Lq_HDL.pdf",width = 5,5,height=5.5)
 ggplot(data.frame(Lq=fit_NFBC_HDL$Lq,pi=fit_NFBC_HDL$logodds),aes(x=pi,y=Lq)) +# geom_line() +
-  geom_point() + xlab(expression(paste("logodds(",pi,")"))) + ylab("Lower Bound") + theme_grey(base_size = 15)
+  geom_point() + xlab(expression(paste("log"[10]*"odds(",pi,")"))) + ylab("Lower Bound") + theme_grey(base_size = 15)
 dev.off()
 
 #Alpha trace NFBC-HDL
 pdf(file = "alpha_HDL.pdf",width = 5,5,height=5.5)
 ggplot(data.frame(Lq=fit_NFBC_HDL$alpha,pi=fit_NFBC_HDL$logodds),aes(x=pi,y=Lq)) +# geom_line() +
-  geom_point() + xlab(expression(paste("logodds(",pi,")"))) + ylab(expression(alpha)) + theme_grey(base_size = 15)
+  geom_point() + xlab(expression(paste("log"[10]*"odds(",pi,")"))) + ylab(expression(alpha)) + theme_grey(base_size = 15)
 dev.off()
 
+
+
+
+
+
+
+
+
+
+
+# Supp simulation
+########################################################################### large rho ###########################################################################
+load("/Users/cmx/Desktop/Bivas/R-package/bivas_simulation/BF_largeRho.RData")
+names(out) <- c("Time","FDR","AUC","groupAUC","Power","Error","Method","CORR","SNR","Sparsity")
+levels(out$Method) <- c("BIVAS","varbvs","cMCP","GEL")
+x_grid <- c("SNR=0.5","SNR=1","SNR=2")
+names(x_grid) <- levels(out$SNR)
+y_grid <- c("CORR=0.9","CORR=0.95","CORR=0.99")
+names(y_grid) <- levels(droplevels(out$CORR))
+
+
+P_rho_AUC   <- ggplot(out,aes(x=Sparsity,y=AUC,fill=Method)) + geom_boxplot() +
+  facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  scale_fill_manual(values=c("#CC6666", "#66CC99", "#E69F00", "#56B4E9")) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom")
+pdf(file = "/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_BF_AUC_bigRho.pdf",width = 12,height = 9)
+P_rho_AUC
+dev.off()
+
+
+P_rho_gAUC <- ggplot(out[out$Method!="varbvs",],aes(x=Sparsity,y=groupAUC,fill=Method)) + geom_boxplot() +
+  facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) + ylab("group-AUC") +
+  scale_fill_manual(values=c("#CC6666", "#E69F00", "#56B4E9"),drop=TRUE) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom")
+pdf(file = "/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_BF_gAUC_bigRho.pdf",width = 12,height = 9)
+P_rho_gAUC
+dev.off()
+
+
+P_rho_error <- ggplot(out,aes(x=Sparsity,y=Error,fill=Method)) + geom_boxplot() +
+  facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) + ylim(c(0,0.02)) +
+  scale_fill_manual(values=c("#CC6666", "#66CC99", "#E69F00", "#56B4E9")) +
+  ylab("Mean Squared Error") + theme_grey(base_size = 15) + theme(legend.position="bottom")
+pdf(file = "/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_BF_error_bigRho.pdf",width = 12,height = 9)
+P_rho_error
+dev.off()
+
+
+P_rho_time <- ggplot(out,aes(x=Sparsity,y=Time,fill=Method)) + geom_boxplot() +
+  facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) + ylim(c(0,75)) +
+  scale_fill_manual(values=c("#CC6666", "#66CC99", "#E69F00", "#56B4E9")) +
+  ylab("Time(second)") + theme_grey(base_size = 15) + theme(legend.position="bottom")
+pdf(file = "/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_BF_time_bigRho.pdf",width = 12,height = 9)
+P_rho_time
+dev.off()
+
+
+P_rho_FDR <- ggplot(out[out$Method%in%c("BIVAS","varbvs"),],aes(x=Sparsity,y=FDR,fill=Method)) +
+  geom_boxplot() + facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  geom_hline(aes(yintercept=0.1),color="red",linetype="dashed") +
+  theme_grey(base_size = 15) + theme(legend.position="bottom")
+pdf(file = "/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_B1_FDR_bigRho.pdf",width = 12,height = 9)
+P_rho_FDR
+dev.off()
+
+
+P_rho_power <- ggplot(out[out$Method%in%c("BIVAS","varbvs"),],aes(x=Sparsity,y=Power,fill=Method)) +
+  geom_boxplot() + facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom")
+pdf(file = "/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_B1_power_bigRho.pdf",width = 12,height = 9)
+P_rho_power
+dev.off()
+
+
+
+########################################################################### Fixed Effects -- SNR ###########################################################################
+load("/Users/cmx/Desktop/Bivas/R-package/bivas_simulation/Bivas_FE_rho0_pi005_SNR.RData")
+names(out) <- c("Time","FDR","AUC","groupAUC","Power","Error","Intercept","C1","C2","C3","C4","C5","CORR","SNR","Sparsity")
+x_grid <- c("SNR=0.5","SNR=1","SNR=2")
+names(x_grid) <- levels(out$SNR)
+y_grid <- "CORR=0"#c("CORR=-0.5","CORR=0","CORR=0.5")
+names(y_grid) <- levels(droplevels(out$CORR))
+
+
+P_Bivas_AUC   <- ggplot(out,aes(x=SNR,y=AUC)) + geom_boxplot() +
+  # facet_grid(.~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25)) +
+  labs(y=NULL,title="AUC")
+# pdf(file = "Supp_AUC_FE.pdf",width = 12,height = 9)
+# P_Bivas_AUC
+# dev.off()
+
+
+P_Bivas_gAUC <- ggplot(out,aes(x=SNR,y=groupAUC)) + geom_boxplot() +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) + ylab("group-AUC") +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25)) +
+  labs(y=NULL,title="group AUC") + scale_fill_discrete(drop=FALSE)
+# pdf(file = "Supp_gAUC_FE.pdf",width = 12,height = 9)
+# P_Bivas_gAUC
+# dev.off()
+
+
+P_Bivas_error <- ggplot(out,aes(x=SNR,y=Error)) + geom_boxplot() +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) + ylim(c(0,0.02)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25)) +
+  labs(y=NULL,title="Mean Squared Error")
+# pdf(file = "Supp_error_FE.pdf",width = 12,height = 9)
+# P_Bivas_error
+# dev.off()
+
+
+P_Bivas_FDR <- ggplot(out,aes(x=SNR,y=FDR)) + geom_boxplot() +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  geom_hline(aes(yintercept=0.1),color="red",linetype="dashed") +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25)) +
+  labs(y=NULL,title="FDR")
+# pdf(file = "Supp_FDR_FE.pdf",width = 12,height = 9)
+# P_Bivas_FDR
+# dev.off()
+
+
+P_Bivas_power <- ggplot(out,aes(x=SNR,y=Power)) +geom_boxplot() +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25)) +
+  labs(y=NULL,title="power")
+# pdf(file = "Supp_power_FE.pdf",width = 12,height = 9)
+# P_Bivas_power
+# dev.off()
+
+
+P_Bivas_C1 <- ggplot(out,aes(x=SNR,y=C1)) +geom_boxplot() + geom_hline(aes(yintercept=1),color="red",linetype="dashed") +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25)) +
+  labs(y=NULL,title=expression(omega[1]))
+# pdf(file = "Supp_power_FE.pdf",width = 12,height = 9)
+# P_Bivas_C1
+# dev.off()
+
+P_Bivas_C2 <- ggplot(out,aes(x=SNR,y=C2)) +geom_boxplot() + geom_hline(aes(yintercept=2),color="red",linetype="dashed") +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25)) +
+  labs(y=NULL,title=expression(omega[2]))
+# pdf(file = "Supp_power_FE.pdf",width = 12,height = 9)
+# P_Bivas_C2
+# dev.off()
+
+P_Bivas_C3 <- ggplot(out,aes(x=SNR,y=C3)) +geom_boxplot() + geom_hline(aes(yintercept=3),color="red",linetype="dashed") +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25)) +
+  labs(y=NULL,title=expression(omega[3]))
+# pdf(file = "Supp_power_FE.pdf",width = 12,height = 9)
+# P_Bivas_C3
+# dev.off()
+
+P_Bivas_C4 <- ggplot(out,aes(x=SNR,y=C4)) +geom_boxplot() + geom_hline(aes(yintercept=4),color="red",linetype="dashed") +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25)) +
+  labs(y=NULL,title=expression(omega[4]))
+# pdf(file = "Supp_power_FE.pdf",width = 12,height = 9)
+# P_Bivas_C4
+# dev.off()
+
+P_Bivas_C5 <- ggplot(out,aes(x=SNR,y=C5)) +geom_boxplot() + geom_hline(aes(yintercept=5),color="red",linetype="dashed") +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25)) +
+  labs(y=NULL,title=expression(omega[5]))
+# pdf(file = "Supp_power_FE.pdf",width = 12,height = 9)
+# P_Bivas_C5
+# dev.off()
+
+Fig1 <- grid.arrange(P_Bivas_AUC,P_Bivas_gAUC,P_Bivas_error,P_Bivas_FDR,P_Bivas_power,
+                     P_Bivas_C1,P_Bivas_C2,P_Bivas_C3,P_Bivas_C4,P_Bivas_C5,ncol=5,nrow=2)
+ggsave("/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_FE_SNR.pdf",Fig1,width=30,height=14)
+
+
+
+########################################################################### Fixed Effects -- rho ###########################################################################
+load("/Users/cmx/Desktop/Bivas/R-package/bivas_simulation/Bivas_FE_SNR1_pi005_rho.RData")
+names(out) <- c("Time","FDR","AUC","groupAUC","Power","Error","Intercept","C1","C2","C3","C4","C5","CORR","SNR","Sparsity")
+out <- out[out$CORR%in%c("-0.5","0","0.5"),]
+x_grid <- "SNR=1"#c("SNR=0.5","SNR=1","SNR=2")
+names(x_grid) <- levels(out$SNR)
+y_grid <- c("CORR=-0.5","CORR=0","CORR=0.5")
+names(y_grid) <- levels(droplevels(out$CORR))
+
+
+P_Bivas_AUC   <- ggplot(out,aes(x=CORR,y=AUC)) + geom_boxplot() +
+  # facet_grid(.~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25)) +
+  labs(y=NULL,x=expression(rho),title="AUC")
+# pdf(file = "Supp_AUC_FE.pdf",width = 12,height = 9)
+# P_Bivas_AUC
+# dev.off()
+
+
+P_Bivas_gAUC <- ggplot(out,aes(x=CORR,y=groupAUC)) + geom_boxplot() +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) + ylab("group-AUC") +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25)) +
+  labs(y=NULL,x=expression(rho),title="group AUC") + scale_fill_discrete(drop=FALSE)
+# pdf(file = "Supp_gAUC_FE.pdf",width = 12,height = 9)
+# P_Bivas_gAUC
+# dev.off()
+
+
+P_Bivas_error <- ggplot(out,aes(x=CORR,y=Error)) + geom_boxplot() +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) + ylim(c(0,0.02)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25)) +
+  labs(y=NULL,x=expression(rho),title="Mean Squared Error")
+# pdf(file = "Supp_error_FE.pdf",width = 12,height = 9)
+# P_Bivas_error
+# dev.off()
+
+
+P_Bivas_FDR <- ggplot(out,aes(x=CORR,y=FDR)) + geom_boxplot() +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  geom_hline(aes(yintercept=0.1),color="red",linetype="dashed") +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25)) +
+  labs(y=NULL,x=expression(rho),title="FDR")
+# pdf(file = "Supp_FDR_FE.pdf",width = 12,height = 9)
+# P_Bivas_FDR
+# dev.off()
+
+
+P_Bivas_power <- ggplot(out,aes(x=CORR,y=Power)) +geom_boxplot() +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25)) +
+  labs(y=NULL,x=expression(rho),title="power")
+# pdf(file = "Supp_power_FE.pdf",width = 12,height = 9)
+# P_Bivas_power
+# dev.off()
+
+
+P_Bivas_C1 <- ggplot(out,aes(x=CORR,y=C1)) +geom_boxplot() + geom_hline(aes(yintercept=1),color="red",linetype="dashed") +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25)) +
+  labs(y=NULL,x=expression(rho),title=expression(omega[1]))
+# pdf(file = "Supp_power_FE.pdf",width = 12,height = 9)
+# P_Bivas_C1
+# dev.off()
+
+P_Bivas_C2 <- ggplot(out,aes(x=CORR,y=C2)) +geom_boxplot() + geom_hline(aes(yintercept=2),color="red",linetype="dashed") +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25)) +
+  labs(y=NULL,x=expression(rho),title=expression(omega[2]))
+# pdf(file = "Supp_power_FE.pdf",width = 12,height = 9)
+# P_Bivas_C2
+# dev.off()
+
+P_Bivas_C3 <- ggplot(out,aes(x=CORR,y=C3)) +geom_boxplot() + geom_hline(aes(yintercept=3),color="red",linetype="dashed") +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25)) +
+  labs(y=NULL,x=expression(rho),title=expression(omega[3]))
+# pdf(file = "Supp_power_FE.pdf",width = 12,height = 9)
+# P_Bivas_C3
+# dev.off()
+
+P_Bivas_C4 <- ggplot(out,aes(x=CORR,y=C4)) +geom_boxplot() + geom_hline(aes(yintercept=4),color="red",linetype="dashed") +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25)) +
+  labs(y=NULL,x=expression(rho),title=expression(omega[4]))
+# pdf(file = "Supp_power_FE.pdf",width = 12,height = 9)
+# P_Bivas_C4
+# dev.off()
+
+P_Bivas_C5 <- ggplot(out,aes(x=CORR,y=C5)) +geom_boxplot() + geom_hline(aes(yintercept=5),color="red",linetype="dashed") +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25)) +
+  labs(y=NULL,x=expression(rho),title=expression(omega[5]))
+# pdf(file = "Supp_power_FE.pdf",width = 12,height = 9)
+# P_Bivas_C5
+# dev.off()
+
+Fig1 <- grid.arrange(P_Bivas_AUC,P_Bivas_gAUC,P_Bivas_error,P_Bivas_FDR,P_Bivas_power,
+                     P_Bivas_C1,P_Bivas_C2,P_Bivas_C3,P_Bivas_C4,P_Bivas_C5,ncol=5,nrow=2)
+ggsave("/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_FE_rho.pdf",Fig1,width=30,height=14)
+
+
+
+########################################################################### Fixed Effects -- sparsity ###########################################################################
+load("/Users/cmx/Desktop/Bivas/R-package/bivas_simulation/Bivas_FE_SNR1_rho0_Sparsity.RData")
+names(out) <- c("Time","FDR","AUC","groupAUC","Power","Error","Intercept","C1","C2","C3","C4","C5","CORR","SNR","Sparsity")
+# out <- out[out$CORR%in%c("-0.5","0","0.5"),]
+x_grid <- "SNR=1"#c("SNR=0.5","SNR=1","SNR=2")
+names(x_grid) <- levels(out$SNR)
+y_grid <- "CORR=0"#c("CORR=-0.5","CORR=0","CORR=0.5")
+names(y_grid) <- levels(droplevels(out$CORR))
+
+
+P_Bivas_AUC   <- ggplot(out,aes(x=Sparsity,y=AUC)) + geom_boxplot() +
+  # facet_grid(.~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25),axis.text.x = element_text(size=15)) +
+  labs(y=NULL,title="AUC")
+# pdf(file = "Supp_AUC_FE.pdf",width = 12,height = 9)
+# P_Bivas_AUC
+# dev.off()
+
+
+P_Bivas_gAUC <- ggplot(out,aes(x=Sparsity,y=groupAUC)) + geom_boxplot() +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) + ylab("group-AUC") +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25),axis.text.x = element_text(size=15)) +
+  labs(y=NULL,title="group AUC") + scale_fill_discrete(drop=FALSE)
+# pdf(file = "Supp_gAUC_FE.pdf",width = 12,height = 9)
+# P_Bivas_gAUC
+# dev.off()
+
+
+P_Bivas_error <- ggplot(out,aes(x=Sparsity,y=Error)) + geom_boxplot() +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) + ylim(c(0,0.02)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25),axis.text.x = element_text(size=15)) +
+  labs(y=NULL,title="Mean Squared Error")
+# pdf(file = "Supp_error_FE.pdf",width = 12,height = 9)
+# P_Bivas_error
+# dev.off()
+
+
+P_Bivas_FDR <- ggplot(out,aes(x=Sparsity,y=FDR)) + geom_boxplot() +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  geom_hline(aes(yintercept=0.1),color="red",linetype="dashed") +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25),axis.text.x = element_text(size=15)) +
+  labs(y=NULL,title="FDR")
+# pdf(file = "Supp_FDR_FE.pdf",width = 12,height = 9)
+# P_Bivas_FDR
+# dev.off()
+
+
+P_Bivas_power <- ggplot(out,aes(x=Sparsity,y=Power)) +geom_boxplot() +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25),axis.text.x = element_text(size=15)) +
+  labs(y=NULL,title="power")
+# pdf(file = "Supp_power_FE.pdf",width = 12,height = 9)
+# P_Bivas_power
+# dev.off()
+
+
+P_Bivas_C1 <- ggplot(out,aes(x=Sparsity,y=C1)) +geom_boxplot() + geom_hline(aes(yintercept=1),color="red",linetype="dashed") +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25),axis.text.x = element_text(size=15)) +
+  labs(y=NULL,title=expression(omega[1]))
+# pdf(file = "Supp_power_FE.pdf",width = 12,height = 9)
+# P_Bivas_C1
+# dev.off()
+
+P_Bivas_C2 <- ggplot(out,aes(x=Sparsity,y=C2)) +geom_boxplot() + geom_hline(aes(yintercept=2),color="red",linetype="dashed") +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25),axis.text.x = element_text(size=15)) +
+  labs(y=NULL,title=expression(omega[2]))
+# pdf(file = "Supp_power_FE.pdf",width = 12,height = 9)
+# P_Bivas_C2
+# dev.off()
+
+P_Bivas_C3 <- ggplot(out,aes(x=Sparsity,y=C3)) +geom_boxplot() + geom_hline(aes(yintercept=3),color="red",linetype="dashed") +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25),axis.text.x = element_text(size=15)) +
+  labs(y=NULL,title=expression(omega[3]))
+# pdf(file = "Supp_power_FE.pdf",width = 12,height = 9)
+# P_Bivas_C3
+# dev.off()
+
+P_Bivas_C4 <- ggplot(out,aes(x=Sparsity,y=C4)) +geom_boxplot() + geom_hline(aes(yintercept=4),color="red",linetype="dashed") +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25),axis.text.x = element_text(size=15)) +
+  labs(y=NULL,title=expression(omega[4]))
+# pdf(file = "Supp_power_FE.pdf",width = 12,height = 9)
+# P_Bivas_C4
+# dev.off()
+
+P_Bivas_C5 <- ggplot(out,aes(x=Sparsity,y=C5)) +geom_boxplot() + geom_hline(aes(yintercept=5),color="red",linetype="dashed") +
+  # facet_grid(CORR~SNR,labeller = labeller(SNR=x_grid,CORR=y_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom",plot.title = element_text(hjust = 0.5),text = element_text(size=25),axis.text.x = element_text(size=15)) +
+  labs(y=NULL,title=expression(omega[5]))
+# pdf(file = "Supp_power_FE.pdf",width = 12,height = 9)
+# P_Bivas_C5
+# dev.off()
+
+Fig1 <- grid.arrange(P_Bivas_AUC,P_Bivas_gAUC,P_Bivas_error,P_Bivas_FDR,P_Bivas_power,
+                     P_Bivas_C1,P_Bivas_C2,P_Bivas_C3,P_Bivas_C4,P_Bivas_C5,ncol=5,nrow=2)
+ggsave("/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_FE_Sparsity.pdf",Fig1,width=30,height=14)
+
+
+
+########################################################################### group selection weak signal ###########################################################################
+load("/Users/cmx/Desktop/Bivas/R-package/bivas_simulation/Bivas_weak.RData")
+fdr_bivas <- fdrControl(out_bivas,0.01,"global")
+fdr_varbvs <- fdr2FDR(1-with(out_varbvs,alpha%*%normalizelogweights(logw)))
+fdr_i <- fdr_bivas$FDR[as.logical(eta)]
+fdr_g <- fdr_bivas$groupFDR[as.logical(eta0)]
+
+out1 <- data.frame(FDR=c(fdr_i,fdr_g),Vid=c(paste("V",rep(1:20,12),sep=""),rep("Group",12)),Gid=paste("G",c(t(replicate(20,1:12)),1:12),sep=""))
+out1$Vid <- factor(out1$Vid,levels = c(paste("V",1:20,sep=""),"Group"))
+out1$Gid <- factor(out1$Gid,levels = paste("G",1:12,sep=""))
+out1$star <- ""
+out1$star[out1$FDR<0.05] <- "*"
+
+P1 <- ggplot(out1, aes(x=Gid, y=Vid)) +
+  geom_tile(aes(fill = -log10(FDR)), colour = "white") +
+  scale_fill_gradient(low = "white",high = "steelblue") +
+  geom_text(aes(label = star),size=10, vjust = 0.8) +
+  labs(fill=expression(-log[10](FDR)),y="FDR",x="group") +
+  theme(text = element_text(size=25), axis.text.y =  element_text(size=17), axis.text.x = element_text(size=15),legend.position = "right")
+
+out2 <- data.frame(FDR=fdr_varbvs[as.logical(eta)],Vid=paste("V",rep(1:20,12),sep=""),Gid=paste("G",c(t(replicate(20,1:12))),sep=""))
+out2$Vid <- factor(out2$Vid,levels = c(paste("V",1:20,sep="")))
+out2$Gid <- factor(out2$Gid,levels = paste("G",1:12,sep=""))
+out2$star <- ""
+out2$star[out2$FDR<0.05] <- "*"
+
+P2 <- ggplot(out2, aes(x=Gid, y=Vid)) +
+  geom_tile(aes(fill = -log10(FDR)), colour = "white") +
+  scale_fill_gradient(low = "white",high = "steelblue") +
+  geom_text(aes(label = star),size=10, vjust = 0.8) +
+  labs(fill=expression(-log[10](FDR)),y="FDR",x="group") +
+  theme(text = element_text(size=25), axis.text.y =  element_text(size=17), axis.text.x = element_text(size=15),legend.position = "right")
+
+
+pdf("/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_group_weak_bivas.pdf",width=15,height=10)
+P1
+dev.off()
+pdf("/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_group_weak_varbvs.pdf",width=15,height=10)
+P2
+dev.off()
+
+
+########################################################################### EMVS vs varbvs: SNR ###########################################################################
+load("/Users/cmx/Desktop/Bivas/R-package/bivas_simulation/EMVS_varbvs_weak.RData")
+names(out) <- c("Time","FDR","AUC","Power","Error","Method","CORR","SNR","Sparsity")
+# levels(out$Method) <- c("EMVS","varbvs")
+x_grid <- c("SNR=0.5","SNR=1","SNR=2","SNR=10")
+names(x_grid) <- levels(out$SNR)
+# y_grid <- c("CORR=0.9","CORR=0.95","CORR=0.99")
+# names(y_grid) <- levels(droplevels(out$CORR))
+
+P_AUC   <- ggplot(out,aes(x=Sparsity,y=AUC,fill=Method)) + geom_boxplot() +
+  facet_grid(.~SNR,labeller = labeller(SNR=x_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom")
+pdf(file = "/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_EMVS_AUC.pdf",width = 12,height = 9)
+P_AUC
+dev.off()
+
+
+P_error <- ggplot(out,aes(x=Sparsity,y=Error,fill=Method)) + geom_boxplot() +
+  facet_grid(.~SNR,labeller = labeller(SNR=x_grid)) +
+  ylab("Mean Squared Error") + theme_grey(base_size = 15) + theme(legend.position="bottom")
+pdf(file = "/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_EMVS_error.pdf",width = 12,height = 9)
+P_error
+dev.off()
+
+
+# P_time <- ggplot(out,aes(x=Sparsity,y=Time,fill=Method)) + geom_boxplot() +
+#   facet_grid(.~SNR,labeller = labeller(SNR=x_grid)) +
+#   ylab("Time(second)") + theme_grey(base_size = 15) + theme(legend.position="bottom")
+# pdf(file = "/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_EMVS_time.pdf",width = 12,height = 9)
+# P_time
+# dev.off()Carbonetto P, Stephens M. Scalable variational inference for Bayesian variable selection in regression, and its accuracy in genetic association studies[J]. Bayesian analysis, 2012, 7(1): 73-108.
+
+
+P_FDR <- ggplot(out,aes(x=Sparsity,y=FDR,fill=Method)) +
+  geom_boxplot() + facet_grid(.~SNR,labeller = labeller(SNR=x_grid)) +
+  geom_hline(aes(yintercept=0.1),color="red",linetype="dashed") +
+  theme_grey(base_size = 15) + theme(legend.position="bottom")
+pdf(file = "/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_EMVS_FDR.pdf",width = 12,height = 9)
+P_FDR
+dev.off()
+
+
+P_power <- ggplot(out,aes(x=Sparsity,y=Power,fill=Method)) +
+  geom_boxplot() + facet_grid(.~SNR,labeller = labeller(SNR=x_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom")
+pdf(file = "/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_EMVS_power.pdf",width = 12,height = 9)
+P_power
+dev.off()
+
+########################################################################### BIVAS vs BSGS ###########################################################################
+load("/Users/cmx/Desktop/Bivas/R-package/bivas_simulation/BIVAS_BSGS_beta.RData")
+# out <- data.frame(method=rep(c("BSGS_simple","BSGS_sample","bivas"),each=length(coef_bivas$beta)),beta=c(PE_simple$beta.est,PE_sample$beta.est,coef_bivas$beta))
+out <- data.frame(BSGS=PE_simple$beta.est,bivas=coef_bivas$beta)
+
+P_beta <- ggplot(out,aes(x=BSGS,y=bivas))+
+  geom_smooth(method=lm,  linetype="dashed",color="darkred") + geom_abline(slope = 1) + geom_point(size=2)
+pdf(file = "/Users/cmx/Desktop/Bivas/Bivas-paper/image/BIVAS_BSGS_beta.pdf",width = 8,height = 6)
+P_beta
+dev.off()
+
+# load("/Users/cmx/Desktop/Bivas/R-package/bivas_simulation/BIVAS_BSGS3.RData")
+# names(out) <- c("Time","FDR","group-FDR","AUC","group-AUC","Power","group-Power","Error","Method","CORR","SNR","Sparsity")
+# # levels(out$Method) <- c("EMVS","varbvs")
+# x_grid <- "1"#c("SNR=0.5","SNR=1","SNR=2","SNR=10")
+# names(x_grid) <- levels(out$SNR)
+# # y_grid <- c("CORR=0.9","CORR=0.95","CORR=0.99")
+# # names(y_grid) <- levels(droplevels(out$CORR))
+#
+# P_AUC   <- ggplot(out,aes(x=Sparsity,y=AUC,fill=Method)) + geom_boxplot() +
+#   facet_grid(.~SNR,labeller = labeller(SNR=x_grid)) +
+#   theme_grey(base_size = 15) + theme(legend.position="bottom")
+# pdf(file = "/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_BSGS_AUC.pdf",width = 12,height = 9)
+# P_AUC
+# dev.off()
+#
+#
+# P_error <- ggplot(out,aes(x=Sparsity,y=Error,fill=Method)) + geom_boxplot() +
+#   facet_grid(.~SNR,labeller = labeller(SNR=x_grid)) +
+#   ylab("Mean Squared Error") + theme_grey(base_size = 15) + theme(legend.position="bottom")
+# pdf(file = "/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_BSGS_error.pdf",width = 12,height = 9)
+# P_error
+# dev.off()
+#
+#
+# P_time <- ggplot(out,aes(x=Sparsity,y=Time,fill=Method)) + geom_boxplot() +
+#   facet_grid(.~SNR,labeller = labeller(SNR=x_grid)) +
+#   ylab("Time(second)") + theme_grey(base_size = 15) + theme(legend.position="bottom")
+# pdf(file = "/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_BSGS_time.pdf",width = 12,height = 9)
+# P_time
+# dev.off()
+#
+#
+# P_FDR <- ggplot(out,aes(x=Sparsity,y=FDR,fill=Method)) +
+#   geom_boxplot() + facet_grid(.~SNR,labeller = labeller(SNR=x_grid)) +
+#   geom_hline(aes(yintercept=0.1),color="red",linetype="dashed") +
+#   theme_grey(base_size = 15) + theme(legend.position="bottom")
+# pdf(file = "/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_BSGS_FDR.pdf",width = 12,height = 9)
+# P_FDR
+# dev.off()
+#
+#
+# P_power <- ggplot(out,aes(x=Sparsity,y=Power,fill=Method)) +
+#   geom_boxplot() + facet_grid(.~SNR,labeller = labeller(SNR=x_grid)) +
+#   theme_grey(base_size = 15) + theme(legend.position="bottom")
+# pdf(file = "/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_BSGS_power.pdf",width = 12,height = 9)
+# P_power
+# dev.off()
+
+
+########################################################################### BIVAS initialization ###########################################################################
+load("/Users/cmx/Desktop/Bivas/R-package/bivas_simulation/Bivas_init_test2.RData")
+names(out) <- c("Time","FDR","AUC","group-AUC","Power","Error","pi","alpha","sb2","se2","Method","CORR","SNR","Sparsity")
+# levels(out$Method) <- c("EMVS","varbvs")
+x_grid <- "1"#c("SNR=0.5","SNR=1","SNR=2","SNR=10")
+names(x_grid) <- levels(out$SNR)
+# y_grid <- c("CORR=0.9","CORR=0.95","CORR=0.99")
+# names(y_grid) <- levels(droplevels(out$CORR))
+
+P_AUC   <- ggplot(out,aes(x=Sparsity,y=AUC,fill=Method)) + geom_boxplot() +
+  facet_grid(.~SNR,labeller = labeller(SNR=x_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom")
+pdf(file = "/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_init_AUC.pdf",width = 12,height = 9)
+P_AUC
+dev.off()
+
+
+P_error <- ggplot(out,aes(x=Sparsity,y=Error,fill=Method)) + geom_boxplot() +
+  facet_grid(.~SNR,labeller = labeller(SNR=x_grid)) +
+  ylab("Mean Squared Error") + theme_grey(base_size = 15) + theme(legend.position="bottom")
+pdf(file = "/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_init_error.pdf",width = 12,height = 9)
+P_error
+dev.off()
+
+
+P_FDR <- ggplot(out,aes(x=Sparsity,y=FDR,fill=Method)) +
+  geom_boxplot() + facet_grid(.~SNR,labeller = labeller(SNR=x_grid)) +
+  geom_hline(aes(yintercept=0.1),color="red",linetype="dashed") +
+  theme_grey(base_size = 15) + theme(legend.position="bottom")
+pdf(file = "/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_init_FDR.pdf",width = 12,height = 9)
+P_FDR
+dev.off()
+
+
+P_power <- ggplot(out,aes(x=Sparsity,y=Power,fill=Method)) +
+  geom_boxplot() + facet_grid(.~SNR,labeller = labeller(SNR=x_grid)) +
+  theme_grey(base_size = 15) + theme(legend.position="bottom")
+pdf(file = "/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_init_power.pdf",width = 12,height = 9)
+P_power
+dev.off()
+
+
+P_pi <- ggplot(out,aes(x=Sparsity,y=pi,fill=Method)) +
+  geom_boxplot() + facet_grid(.~SNR,labeller = labeller(SNR=x_grid)) + geom_hline(yintercept = 0.8,linetype="dotted", color = "red")+
+  theme_grey(base_size = 15) + theme(legend.position="bottom")
+pdf(file = "/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_init_pi.pdf",width = 12,height = 9)
+P_pi
+dev.off()
+
+
+P_alpha <- ggplot(out,aes(x=Sparsity,y=alpha,fill=Method)) +
+  geom_boxplot() + facet_grid(.~SNR,labeller = labeller(SNR=x_grid)) + geom_hline(yintercept = 0.05,linetype="dotted", color = "red")+
+theme_grey(base_size = 15) + theme(legend.position="bottom")
+pdf(file = "/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_initS_alpha.pdf",width = 12,height = 9)
+P_alpha
+dev.off()
+
+
+P_sb2 <- ggplot(out,aes(x=Sparsity,y=sb2,fill=Method)) +
+  geom_boxplot() + facet_grid(.~SNR,labeller = labeller(SNR=x_grid)) + geom_hline(yintercept = 0.1,linetype="dotted", color = "red")+
+theme_grey(base_size = 15) + theme(legend.position="bottom")
+pdf(file = "/Users/cmx/Desktop/Bivas/Bivas-paper/image/Supp_init_sb2.pdf",width = 12,height = 9)
+P_sb2
+dev.off()
 
