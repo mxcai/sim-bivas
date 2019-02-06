@@ -1,4 +1,4 @@
-# Compare EMVS with varbvs
+# Compare BVIAS posterior mean estimates with that of BSGS
 require(BSGS)
 library(bivas)
 set.seed(2)
