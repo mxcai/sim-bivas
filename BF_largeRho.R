@@ -1,4 +1,4 @@
-# A joint simulation for alyzing SNR-CORR-Sparsity effects on BIVAS, varbvs, cMCP, gel, BSGS-SS
+# A joint simulation for alyzing SNR-CORR-Sparsity effects on BIVAS, varbvs, cMCP, gel, BSGS-SS with large corelation
 library(pROC)
 library(grpreg)
 library(mvtnorm)
