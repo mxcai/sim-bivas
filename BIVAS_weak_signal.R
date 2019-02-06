@@ -1,4 +1,4 @@
-# A joint simulation for alyzing SNR-CORR-Sparsity effects on BIVAS, varbvs, cMCP, gel, gBridge, BSGS
+# Analyzing the performances of BIVAS and varbvs under weak signal -- demonstrate the ability of identifying group when all variables are unidentified
 library(pROC)
 library(grpreg)
 library(mvtnorm)
@@ -59,21 +59,13 @@ for(i in 1:length(snr)) {
         beta_true[(eta*gamma)==1] <- rnorm(sum(eta*gamma==1),0,sqrt(sb2_true))
 
         #corelated desien matrix
-        # X <- matrix(nrow=n,ncol=0)
-        # for (k in 1:K) {
-        #   sigma <- makcov2(l[k],corr[j])
-        #   X_k <- rmvnorm(n,mean=rep(0,l[k]),sigma=sigma)
-        #   X <- cbind(X,X_k)
-        # }
         X <- replicate(p,rnorm(n))
-        # X <- scale(X,center=TRUE,scale=FALSE)
 
         mu <- 0
 
         y0 <- mu+X%*%beta_true
         se2_true <- var(X%*%beta_true) / snr[i]
         y <- y0 + rnorm(n,0,sqrt(se2_true))
-        # y <- y-mean(y)
 
         time_varbvs <- system.time( out_varbvs <- varbvs(X=X,y=y,Z=NULL,verbose = F) )[3]
         time_bivas  <- system.time( out_bivas  <- bivas(y,X,group=g,coreNum = useCore,verbose = F) )[3]
