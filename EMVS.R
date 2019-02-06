@@ -1,4 +1,4 @@
-# A joint simulation for alyzing SNR-CORR-Sparsity effects on EMVS and varbvs
+# Compare EMVS with varbvs
 library(EMVS)
 library(varbvs)
 library(bivas)
