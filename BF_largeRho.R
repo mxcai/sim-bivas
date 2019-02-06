@@ -1,4 +1,4 @@
-# A joint simulation for alyzing SNR-CORR-Sparsity effects on BIVAS, varbvs, cMCP, gel, gBridge, BSGS
+# A joint simulation for alyzing SNR-CORR-Sparsity effects on BIVAS, varbvs, cMCP, gel, BSGS-SS
 library(pROC)
 library(grpreg)
 library(mvtnorm)
@@ -74,14 +74,9 @@ for(i in 1:length(snr)) {
 
         time_varbvs <- system.time( out_varbvs <- varbvs(X=X,y=y,Z=NULL,verbose = F) )[3]
         time_bivas  <- system.time( out_bivas  <- bivas(y,X,group=g,coreNum = useCore,verbose = F) )[3]
-        # time_BSGS   <- system.time( out_BSGS   <- BSGSSS(y,X,group_size=l,niter=500,burnin=100,num_update = 20,niter.update = 20) )[3]
         time_cMCP   <- system.time( out_cMCP   <- cv.grpreg(X=X,y=y,group=g,penalty="cMCP") )[3]
         time_gel    <- system.time( out_gel    <- cv.grpreg(X=X,y=y,group=g,penalty="gel") )[3]
-        # time_gBridge    <- system.time( out_gBridge    <- gBridge(X=X,y=y,group=g) )[3]
-
-        # FDR_varbvs <- 1 - sum((fdr2FDR(1-with(out_varbvs,alpha%*%normalizelogweights(logw)))<0.1)+(gamma*eta==1)==2) / sum(fdr2FDR(1-with(out_varbvs,alpha%*%normalizelogweights(logw)))<0.1)
-        # FDR_bivas  <- 1 - sum(fdr(out_bivas,control="global")$FDR+(gamma*eta==1)==2) / sum(fdr(out_bivas,control="global")$FDR)
-
+        
         table_varbvs <- table((fdr2FDR(1-with(out_varbvs,alpha%*%normalizelogweights(logw)))<0.1),gamma*eta)
         if(nrow(table_varbvs)==1) table_varbvs <- rbind(table_varbvs,0)
         table_bivas  <- table(fdr(out_bivas,control="global")$FDR,gamma*eta)
@@ -92,13 +87,11 @@ for(i in 1:length(snr)) {
 
         AUC_varbvs <- auc(eta*gamma,as.vector(with(out_varbvs,alpha%*%normalizelogweights(logw))))
         AUC_bivas  <- auc(eta*gamma,as.vector(getPos(out_bivas)$var_pos))
-        # AUC_BSGS   <- auc(eta*gamma,abs(beta_true-out_BSGS$pos_median)/max(abs(beta_true-out_BSGS$pos_median)))
         AUC_cMCP   <- ifelse(max(abs(as.numeric(coef(out_cMCP)[-1])))==0,NA,auc(eta*gamma,abs(as.numeric(coef(out_cMCP)[-1]))/max(abs(as.numeric(coef(out_cMCP)[-1])))))
         AUC_gel    <- ifelse(max(abs(as.numeric(coef(out_gel)[-1])))==0,NA,auc(eta*gamma,abs(as.numeric(coef(out_gel)[-1]))/max(abs(as.numeric(coef(out_gel)[-1])))))
 
         gAUC_varbvs <- get_gAUC(eta0,with(out_varbvs,(alpha*mu)%*%normalizelogweights(logw)),g)
         gAUC_bivas  <- pROC::auc(eta0,as.vector(getPos(out_bivas)$group_pos))
-        # gAUC_BSGS   <- auc(eta0,abs(beta_true-out_BSGS$pos_median)/max(abs(beta_true-out_BSGS$pos_median)))
         gAUC_cMCP   <- get_gAUC(eta0,coef(out_cMCP)[-1],g)
         gAUC_gel    <- get_gAUC(eta0,coef(out_gel)[-1],g)
 
@@ -110,7 +103,6 @@ for(i in 1:length(snr)) {
 
         error_varbvs <- mean((beta_true-with(out_varbvs,(alpha*mu)%*%normalizelogweights(logw)))^2)
         error_bivas  <- mean((beta_true-coef(out_bivas)$beta)^2)
-        # error_BSGS   <- mean((beta_true-out_BSGS$pos_median)^2)
         error_cMCP   <- mean((beta_true-coef(out_cMCP)[-1])^2)
         error_gel    <- mean((beta_true-coef(out_gel)[-1])^2)
 
